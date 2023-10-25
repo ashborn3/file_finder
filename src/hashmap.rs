@@ -1,50 +1,39 @@
 use std::collections::HashMap;
 use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
+use std::hash::{Hash, Hasher}; 
 
-#[derive(Debug)]
-pub struct FileData {
-    file_path: String,
-    file_name: String
-}
-
-fn hash_path(path: String) -> u64 {
+pub fn hash_path(path: String) -> u64 {
     let mut hasher = DefaultHasher::new();
     path.hash(&mut hasher);
     hasher.finish()
 }
 
-pub fn hash_target_location(hash_map: &mut HashMap<u64, FileData>, path: String) {
-    let path_content = std::fs::read_dir(path.clone()).unwrap();
-    for content in path_content {
-        if content.as_ref().unwrap().path().is_file() {
-            let content_str = content.unwrap().path();
-            let key = hash_path(content_str.to_str().unwrap().to_string());
-            let file = FileData {
-                file_path: content_str.to_str().unwrap().to_string(),
-                file_name: content_str.to_str().unwrap()[path.len()..content_str.to_str().unwrap().to_string().len()].to_string()
-            };
-            hash_map.insert(key, file);
+pub fn hash_map_of_target_location(hashmap: &mut HashMap<u64, Vec<String>>, path: String) {
+    let folder_content = std::fs::read_dir(&path).unwrap();
+    let len_path = path.len() + 1;
+    for content in folder_content {
+        let unwrapped_content = content.unwrap().path();
+        let unwrapped_content_str = unwrapped_content.to_str().unwrap().to_string();
+        if unwrapped_content.is_dir() {
+            hash_map_of_target_location(hashmap, unwrapped_content_str);
         }
         else {
-            hash_target_location(hash_map, content.unwrap().path().to_str().unwrap().to_string());
+            let file_name = unwrapped_content.to_str().unwrap()[len_path..].to_string();
+            match hashmap.entry(hash_path(file_name)) {
+                // If the key exists, push the value to the vector
+                std::collections::hash_map::Entry::Occupied(mut entry) => {
+                    entry.get_mut().push(unwrapped_content_str);
+                }
+                // If the key does not exist, insert a new vector with the value
+                std::collections::hash_map::Entry::Vacant(entry) => {
+                    entry.insert(vec![unwrapped_content_str]);
+                }
+            }
         }
     }
 }
 
-pub fn find_hash_value(hash_map: &HashMap<u64, FileData>, key: u64) -> String {
-    let result = hash_map.get(&key);
-    match result {
-        Some(value) => (&value.file_path).to_string(),
-        None => "File Not Found".to_string()
-    }
-}
-
-pub fn search_file_by_name(hash_map: &HashMap<u64, FileData>, file_name: &str) -> String {
-    for (_, file_data) in hash_map.iter() {
-        if file_data.file_name == "\\".to_string() + file_name {
-            return file_data.file_path.clone();
-        }
-    }
-    return "FILE NOT FOUND".to_string();
+pub fn hash_map_get_path(hashmap: &HashMap<u64, Vec<String>>, key: u64) {
+    let value_ref = hashmap.get(&key).unwrap();
+    println!("Found in {:?}", value_ref);
 }

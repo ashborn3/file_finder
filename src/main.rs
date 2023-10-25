@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::time::Instant;
 
-mod filewalker;
 mod hashmap;
 
 fn main() {
@@ -9,28 +8,25 @@ fn main() {
 
     let formatted_path = format_string_for_fs(init_path);
 
+    let file: String = "baselib.dll".to_string();
+
     let now1 = Instant::now();
 
-    let mut fs_hash_map: HashMap<u64, hashmap::FileData> = HashMap::new();
+    let mut fs_hash_map: HashMap<u64, Vec<String>> = HashMap::new();
 
-    hashmap::hash_target_location(&mut fs_hash_map, formatted_path);
+    hashmap::hash_map_of_target_location(&mut fs_hash_map, formatted_path);
 
-    let elapsed = now1.elapsed();
+    let now1a = now1.elapsed();
 
-    println!("Created Hash Map! took : {:?}", elapsed);
-
-    //println!("\n\n{:?}\n\n", fs_hash_map);
+    println!("Took {:?} to create the hash map", now1a);
 
     let now2 = Instant::now();
 
-    println!("Searching for baselib.dll\n");
+    hashmap::hash_map_get_path(&fs_hash_map, hashmap::hash_path(file));
 
-    println!("File Found at {}", hashmap::search_file_by_name(&fs_hash_map, "baselib.dll"));
+    let now2a = now2.elapsed();
 
-    let elapse = now2.elapsed();
-
-    println!("Elapsed Time for Searching : {:?}", elapse);
-
+    println!("Took {:?} to find the file", now2a);
 }
 
 fn format_string_for_fs(str: &str) -> String {
