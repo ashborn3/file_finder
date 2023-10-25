@@ -4,29 +4,31 @@ use std::time::Instant;
 mod hashmap;
 
 fn main() {
-    let init_path = "D:/Games";
+    let init_path = "C:/";
 
     let formatted_path = format_string_for_fs(init_path);
 
-    let file: String = "baselib.dll".to_string();
+    hashmap::test_hash_key_collisions(formatted_path);
 
-    let now1 = Instant::now();
+    // let file: String = "baselib.dll".to_string();
 
-    let mut fs_hash_map: HashMap<u64, Vec<String>> = HashMap::new();
+    // let now1 = Instant::now();
 
-    hashmap::hash_map_of_target_location(&mut fs_hash_map, formatted_path);
+    // let mut fs_hash_map: HashMap<u64, Vec<String>> = HashMap::new();
 
-    let now1a = now1.elapsed();
+    // hashmap::hash_map_of_target_location(&mut fs_hash_map, formatted_path);
 
-    println!("Took {:?} to create the hash map", now1a);
+    // let now1a = now1.elapsed();
 
-    let now2 = Instant::now();
+    // println!("Took {:?} to create the hash map", now1a);
 
-    hashmap::hash_map_get_path(&fs_hash_map, hashmap::hash_path(file));
+    // let now2 = Instant::now();
 
-    let now2a = now2.elapsed();
+    // hashmap::hash_map_get_path(&fs_hash_map, hashmap::hash_path(file));
 
-    println!("Took {:?} to find the file", now2a);
+    // let now2a = now2.elapsed();
+
+    // println!("Took {:?} to find the file", now2a);
 }
 
 fn format_string_for_fs(str: &str) -> String {
