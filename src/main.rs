@@ -1,36 +1,34 @@
 use std::collections::HashMap;
 use std::time::Instant;
 
-mod filewalker;
 mod hashmap;
 
 fn main() {
-    let init_path = "D:/Games";
+    let init_path = "C:/";
 
     let formatted_path = format_string_for_fs(init_path);
 
-    let now1 = Instant::now();
+    hashmap::test_hash_key_collisions(formatted_path);
 
-    let mut fs_hash_map: HashMap<u64, hashmap::FileData> = HashMap::new();
+    // let file: String = "baselib.dll".to_string();
 
-    hashmap::hash_target_location(&mut fs_hash_map, formatted_path);
+    // let now1 = Instant::now();
 
-    let elapsed = now1.elapsed();
+    // let mut fs_hash_map: HashMap<u64, Vec<String>> = HashMap::new();
 
-    println!("Created Hash Map! took : {:?}", elapsed);
+    // hashmap::hash_map_of_target_location(&mut fs_hash_map, formatted_path);
 
-    //println!("\n\n{:?}\n\n", fs_hash_map);
+    // let now1a = now1.elapsed();
 
-    let now2 = Instant::now();
+    // println!("Took {:?} to create the hash map", now1a);
 
-    println!("Searching for baselib.dll\n");
+    // let now2 = Instant::now();
 
-    println!("File Found at {}", hashmap::search_file_by_name(&fs_hash_map, "baselib.dll"));
+    // hashmap::hash_map_get_path(&fs_hash_map, hashmap::hash_path(file));
 
-    let elapse = now2.elapsed();
+    // let now2a = now2.elapsed();
 
-    println!("Elapsed Time for Searching : {:?}", elapse);
-
+    // println!("Took {:?} to find the file", now2a);
 }
 
 fn format_string_for_fs(str: &str) -> String {
