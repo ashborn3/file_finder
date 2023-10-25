@@ -54,7 +54,13 @@ pub fn hash_path(path: &String) -> u64 {
 }
 
 pub fn hash_map_of_target_location(hashmap: &mut HashMap<u64, Vec<String>>, path: String) {
-    let folder_content = std::fs::read_dir(&path).unwrap();
+    let folder_content = match fs::read_dir(&path) {
+        Ok(dir) => dir,
+        Err(_e) => {
+            // println!("Got Error for {:?} e {:?}", path, _e);
+            return
+        }
+    };
     let len_path = path.len() + 1;
     for content in folder_content {
         let unwrapped_content = content.unwrap().path();
