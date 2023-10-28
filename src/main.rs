@@ -1,37 +1,52 @@
 use std::collections::HashMap;
 use std::time::Instant;
+use std::env;
 
 mod hashmap;
+mod cachehash;
 
 fn main() {
+    let search_string = match env::args().nth(1) {
+        Some(value) => value,
+        None => panic!("No Argument Given")
+    };
+
     let init_path = "C:/";
 
     let formatted_path = format_string_for_fs(init_path);
+
+    let now_read_hash_from_cache = Instant::now();
     
     // 2.34% collision percentage benchmarked on C drive
     // hashmap::test_hash_key_collisions(formatted_path);
 
-    let file: String = "THPReport.xml".to_string();
-
-    let now1 = Instant::now();
-
-    let hash_size: usize = 500000;
-
     let mut fs_hash_map: HashMap<u64, Vec<String>> = HashMap::new();
 
-    hashmap::hash_map_of_target_location(&mut fs_hash_map, formatted_path);
+    fs_hash_map = cachehash::get_hash_from_cache();
 
-    let now1a = now1.elapsed();
+    let time_taken_to_read_hash_from_cache = now_read_hash_from_cache.elapsed();
 
-    println!("Took {:?} to create the hash map", now1a);
+    println!("Reading HashMap from cache.bin took {:?}", time_taken_to_read_hash_from_cache);
 
-    let now2 = Instant::now();
+    let now1 = Instant::now();
+    hashmap::hash_map_get_path(&fs_hash_map, hashmap::hash_path(&search_string));
 
-    hashmap::hash_map_get_path(&fs_hash_map, hashmap::hash_path(&file));
+    let now2 = now1.elapsed();
 
-    let now2a = now2.elapsed();
+    println!("Took {:?} to Search for {}", now2, search_string);
 
-    println!("Took {:?} to find the file", now2a);
+    // while true {
+    //     print!("Enter your name : ");
+        
+    //     std::io::stdin().read_line(&mut search_string).unwrap();
+
+    //     let now1 = Instant::now();
+    //     hashmap::hash_map_get_path(&fs_hash_map, hashmap::hash_path(&search_string));
+
+    //     let now2 = now1.elapsed();
+
+    //     println!("Took {:?} to Search for {}", now2, search_string);
+    // }
 }
 
 fn format_string_for_fs(str: &str) -> String {
