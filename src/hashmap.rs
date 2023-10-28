@@ -10,7 +10,8 @@ pub fn test_hash_key_collisions(path: String) {
     println!("STARTING COLLISION DETECTION");
     fs_walker(path, &mut key_vector, &mut collision_counter, &mut counter);
     println!("ENDING COLLISION DETECTION");
-    println!("Counter : {}\n Collisions : {}", counter, collision_counter);
+    let coll_to_counter_ratio: f32 = (collision_counter as f32)/(counter as f32);
+    println!("Counter : {}\nCollisions : {}\nCollision to Counter Ratio : {}", counter, collision_counter, coll_to_counter_ratio);
 }
 
 fn fs_walker(path: String, key_vec: &mut Vec<u64>, collision_counter: &mut u64, counter: &mut u64) {
@@ -18,7 +19,7 @@ fn fs_walker(path: String, key_vec: &mut Vec<u64>, collision_counter: &mut u64, 
     let folder_content = match fs::read_dir(&path) {
         Ok(dir) => dir,
         Err(e) => {
-            println!("Got Error for {:?} e {:?}", path, e);
+            println!("Got Error for {:?} e {:?}", path, e.to_string());
             return
         }
     };
@@ -35,7 +36,7 @@ fn fs_walker(path: String, key_vec: &mut Vec<u64>, collision_counter: &mut u64, 
             let key = hash_path(&file_name);
             match key_vec.binary_search(&key) {
                 Ok(v1) => {
-                    println!("COLLISION DETECTED! for file {}", file_name);
+                    //println!("COLLISION DETECTED! for file {} at {}", file_name, unwrapped_content_str);
                     *collision_counter = *collision_counter + 1;
                 },
                 Err(e) => {
@@ -85,6 +86,12 @@ pub fn hash_map_of_target_location(hashmap: &mut HashMap<u64, Vec<String>>, path
 }
 
 pub fn hash_map_get_path(hashmap: &HashMap<u64, Vec<String>>, key: u64) {
-    let value_ref = hashmap.get(&key).unwrap();
-    println!("Found in {:?}", value_ref);
+    match hashmap.get(&key) {
+        Some(value) => {
+            for i in value {
+                println!("File Found at {}", *i);
+            }
+        },
+        None => println!("Given File Not Found")
+    };
 }
