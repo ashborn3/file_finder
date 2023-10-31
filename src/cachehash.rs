@@ -7,6 +7,7 @@ pub struct cache {
     pub map: HashMap<u64, Vec<String>>
 }
 
+//Write the HashMap to disk || Serialize the HashMap
 pub fn cache_the_hash(cache_map: &cache) {
     let json = match serde_json::to_string(&cache_map) {
         Ok(value) => value,
@@ -17,9 +18,13 @@ pub fn cache_the_hash(cache_map: &cache) {
         Ok(value) => value,
         Err(_e) => panic!("File Creation Failed")
     };
-    mycache.write_all(json.as_bytes());
+    let _ = match mycache.write_all(json.as_bytes()) {
+        Ok(v) => v,
+        Err(_v) => panic!("Failed to write HashMap JSON to file")
+    };
 }
 
+//Read and return the HashMap || Deserialize the HashMap
 pub fn get_hash_from_cache() -> HashMap<u64, Vec<String>> {
     let mut mycache = match std::fs::File::open("cache.bin") {
         Ok(value) => value,
